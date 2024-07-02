@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LCTI 자동매매 수익률</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        h1 {
+            color: #007BFF;
+            text-align: center;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 2px solid #007BFF;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-weight: bold;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            display: none;
+        }
+        th, td {
+            text-align: center;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+        .link-button {
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            padding: 5px 10px;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .link-button:hover {
+            background-color: #0056b3;
+        }
+        #loadingScreen {
+            display: none;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 75, 160, 0.7);
+            color: white;
+            font-size: 24px;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            flex-direction: column; /* 수정된 부분 */
+        }
+        #loadingBarContainer {
+            width: 50%;
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px; /* 텍스트와의 간격을 위해 추가 */
+        }
+        #loadingBar {
+            height: 100%;
+            background-color: #007BFF;
+            transition: width 0.3s ease;
+        }
+        /* 모달 스타일링 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 60px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        form {
+            display: flex; /* Flexbox 사용 */
+            justify-content: center; /* 중앙 정렬 */
+            gap: 50px; /* 버튼 사이의 간격 */
+        }
+        .leverage-option {
+            cursor: pointer; /* 마우스 오버시 포인터 변경 */
+        }
+        /* 라디오 버튼 숨기기 */
+        .leverage-option input[type="radio"] {
+            display: none;
+        }
+        /* 라디오 버튼 레이블 스타일링 */
+        .leverage-option label {
+            padding: 8px 15px;
+            border: 1px solid #ccc;
+            border-radius: 40px;
+        }
+        /* 선택된 라디오 버튼 레이블 스타일 변경 */
+        .leverage-option input[type="radio"]:checked + label {
+            background-color: #007BFF;
+            color: white;
+        }
+    </style>
+    <script>
+        function showLoadingScreen() {
+            document.getElementById('loadingScreen').style.display = 'flex';
+            var progress = 0;
+            var steps = [calculateStep1, calculateStep2, calculateStep3, calculateStep4, calculateStep5, calculateStep6];
+            var interval = setInterval(function() {
+                if (steps.length == 0) {
+                    clearInterval(interval);
+                    document.getElementById('loadingScreen').style.display = 'none';
+                    document.querySelector('table').style.display = 'table'; // Show table
+                  	document.querySelector('details').style.display = 'block'; // Show details
+                } else {
+                    steps.shift()().then(function() {
+                        progress += 100 / 6;
+                        document.getElementById('loadingBar').style.width = progress + '%';
+                        document.getElementById('loadingText').textContent = '수익률 계산 및 결과 다운로드 중 ... ' + Math.round(progress) + '%';
+                    });
+                }
+            }, 1000);
+        }
+
+        function calculateStep1() {
+            return new Promise(function(resolve) {
+                setTimeout(function() {
+                    // Simulate calculation
+                    resolve();
+                }, 1000); // Simulate a 1 second calculation
+            });
+        }
+
+        function calculateStep2() {
+            return new Promise(function(resolve) {
+                setTimeout(function() {
+                    // Simulate calculation
+                    resolve();
+                }, 1000); // Simulate a 1 second calculation
+            });
+        }
+
+        function calculateStep3() {
+            return new Promise(function(resolve) {
+                setTimeout(function() {
+                    // Simulate calculation
+                    resolve();
+                }, 1000); // Simulate a 1 second calculation
+            });
+        }
+
+        function calculateStep4() {
+            return new Promise(function(resolve) {
+                setTimeout(function() {
+                    // Simulate calculation
+                    resolve();
+                }, 1000); // Simulate a 1 second calculation
+            });
+        }
+
+        function calculateStep5() {
+            return new Promise(function(resolve) {
+                setTimeout(function() {
+                    // Simulate calculation
+                    resolve();
+                }, 1000); // Simulate a 1 second calculation
+            });
+        }
+
+        function calculateStep6() {
+            return new Promise(function(resolve) {
+                setTimeout(function() {
+                    // Simulate calculation
+                    resolve();
+                    calculateReturns(); // 최종 단계에서 수익률 계산
+                }, 1000); // Simulate a 1 second calculation
+            });
+        }
+
+        function calculateReturns() {
+            var investment = parseFloat(document.getElementById("investment").value);
+            var leverage = document.querySelector('input[name="leverage"]:checked').value;
+            var multipliers, rateOfReturns;
+            var images;
+
+            switch (leverage) {
+                case "10":
+                    multipliers = [0.21, 1.87, 4.14, 4.85, 6.55, 7.27];
+                    rateOfReturns = ["20.12%", "187.5%", "414.5%", "485.6", "655.9%", "727.6%"];
+                    images = [
+                        'https://live.staticflickr.com/65535/53827788350_55c21f291b_b.jpg',
+                        'https://live.staticflickr.com/65535/53827353686_89759e3d5a_b.jpg',
+                        'https://live.staticflickr.com/65535/53826436627_c4a81fa516_b.jpg',
+                        'https://live.staticflickr.com/65535/53827680179_ce586b0638_b.jpg',
+                        'https://live.staticflickr.com/65535/53827680174_af69d532e8_b.jpg',
+                        'https://live.staticflickr.com/65535/53827592903_f63eb572f3_b.jpg'
+                    ];
+                    break;
+                case "25":
+                    multipliers = [0.55, 11.52, 47.13, 59.29, 104.26, 126.88];
+                    rateOfReturns = ["55.3%", "1,152%", "4,713%", "5,929%", "10,426%", "12,688%"];
+                    images = [
+                        'https://live.staticflickr.com/65535/53827681359_963ec93807_b.jpg',
+                        'https://live.staticflickr.com/65535/53827355051_df66878938_b.jpg',
+                        'https://live.staticflickr.com/65535/53826437862_e5e618fb7c_b.jpg',
+                        'https://live.staticflickr.com/65535/53827681314_e90599f0da_b.jpg',
+                        'https://live.staticflickr.com/65535/53826437867_a2286abc70_b.jpg',
+                        'https://live.staticflickr.com/65535/53826437872_6c80232c30_b.jpg'
+                    ];
+                    break;
+                case "30":
+                    multipliers = [0.68, 18.81, 94.93, 120.1, 228.13, 284.61];
+                    rateOfReturns = ["68.4%", "1,881%", "9,493%", "12,010%", "22,813%", "28,461%"];
+                    images = [
+                        'https://live.staticflickr.com/65535/53827682029_8a649fa7f4_b.jpg',
+                        'https://live.staticflickr.com/65535/53827790370_c1330b2a7a_b.jpg',
+                        'https://live.staticflickr.com/65535/53827682049_62ca0a2036_b.jpg',
+                        'https://live.staticflickr.com/65535/53827594873_166fa3bec8_b.jpg',
+                        'https://live.staticflickr.com/65535/53827682024_9e6efd1f31_b.jpg',
+                        'https://live.staticflickr.com/65535/53827790335_7fc1e046ba_b.jpg'
+                    ];
+                    break;
+                default:
+                    multipliers = [1.71, 18.66, 107.09, 207.03, 541.41, 805.81];
+                    rateOfReturns = ["171%", "1,866%", "10,709%", "20,703%", "54,141%", "80,581%"];
+                    images = [
+                        'https://example.com/image1_default.jpg',
+                        'https://example.com/image2_default.jpg',
+                        'https://example.com/image3_default.jpg',
+                        'https://example.com/image4_default.jpg',
+                        'https://example.com/image5_default.jpg',
+                        'https://example.com/image6_default.jpg'
+                    ];
+            }
+
+            if (!isNaN(investment) && investment >= 0) {
+                document.getElementById("year1").textContent = formatCurrency(investment * multipliers[0]);
+                document.getElementById("year2").textContent = formatCurrency(investment * multipliers[1]);
+                document.getElementById("year3").textContent = formatCurrency(investment * multipliers[2]);
+                document.getElementById("year4").textContent = formatCurrency(investment * multipliers[3]);
+                document.getElementById("year5").textContent = formatCurrency(investment * multipliers[4]);
+                document.getElementById("year6").textContent = formatCurrency(investment * multipliers[5]);
+
+                // Update the rate of returns based on leverage
+                document.getElementById("rate1").textContent = rateOfReturns[0];
+                document.getElementById("rate2").textContent = rateOfReturns[1];
+                document.getElementById("rate3").textContent = rateOfReturns[2];
+                document.getElementById("rate4").textContent = rateOfReturns[3];
+                document.getElementById("rate5").textContent = rateOfReturns[4];
+                document.getElementById("rate6").textContent = rateOfReturns[5];
+
+                // Update the image links based on leverage
+                document.getElementById("image1").setAttribute('onclick', `openModal('${images[0]}')`);
+                document.getElementById("image2").setAttribute('onclick', `openModal('${images[1]}')`);
+                document.getElementById("image3").setAttribute('onclick', `openModal('${images[2]}')`);
+                document.getElementById("image4").setAttribute('onclick', `openModal('${images[3]}')`);
+                document.getElementById("image5").setAttribute('onclick', `openModal('${images[4]}')`);
+                document.getElementById("image6").setAttribute('onclick', `openModal('${images[5]}')`);
+            } else {
+                alert("투자금은 0 또는 양수여야 합니다.");
+                document.getElementById("investment").value = ""; // Clear the invalid input
+            }
+        }
+
+        function formatCurrency(value) {
+            return value.toLocaleString('ko-KR', { style: 'currency', currency: 'KRW', minimumFractionDigits: 0 });
+        }
+
+        // 모달 관련 스크립트
+        function openModal(imgSrc) {
+            var modal = document.getElementById("myModal");
+            var modalImg = document.getElementById("modalImg");
+            modal.style.display = "block";
+            modalImg.src = imgSrc;
+        }
+
+        function closeModal() {
+            document.getElementById("myModal").style.display = "none";
+        }
+
+        // 모달 외부 클릭 시 닫기
+        window.onclick = function(event) {
+            if (event.target == document.getElementById("myModal")) {
+                document.getElementById("myModal").style.display = "none";
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="loadingScreen">
+        <div id="loadingBarContainer">
+            <div id="loadingBar"></div>
+        </div>
+        <p id="loadingText">로딩 중...</p>
+    </div>
+    <div class="container">
+        <h1>LCTI 자동매매 예상수익률 계산기</h1>
+        <p>자동매매 적용 전, 내가 사용할 자동매매의 성능을 미리 볼 수 있는 계산기 입니다.</p>
+        <p>① 내 투자금, ② 사용할 레버리지를 입력하면 5년간 예상 수익을 확인할 수 있습니다.</p>
+        <p>③ 계산 결과는 과거 차트 움직임에 100% 맞게 매칭시킨 수익률 입니다.</p>      
+        <hr>
+        <p></p>
+        <label for="investment">내 투자금 (원화기준)</label><br><br>
+        <input type="number" id="investment" />
+        <p></p>
+        <label for="leverageButtons">사용할 레버리지</label><br><br>
+        <form>
+            <div class="leverage-option">
+                <input type="radio" id="leverage10" name="leverage" value="10">
+                <label for="leverage10">10</label>
+            </div>
+            <div class="leverage-option">
+                <input type="radio" id="leverage25" name="leverage" value="25">
+                <label for="leverage25">25</label>
+            </div>
+            <div class="leverage-option">
+                <input type="radio" id="leverage30" name="leverage" value="30">
+                <label for="leverage30">30</label>
+            </div>
+        </form>
+        <p></p><br>
+        <button onclick="showLoadingScreen()">예상 수익금 알아보기</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>년도</th>
+                    <th>예상 수익금(원금제외)</th>
+                    <th>수익률(복리)</th>
+                    <th>백테스팅 자료보기</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1년 뒤</td>
+                    <td id="year1">₩0</td>
+                    <td id="rate1">171%</td>
+                    <td><button id="image1" class="link-button">확인하기</button></td>
+                </tr>
+                <tr>
+                    <td>2년 뒤</td>
+                    <td id="year2">₩0</td>
+                    <td id="rate2">1,866%</td>
+                    <td><button id="image2" class="link-button">확인하기</button></td>
+                </tr>
+                <tr>
+                    <td>3년 뒤</td>
+                    <td id="year3">₩0</td>
+                    <td id="rate3">10,709%</td>
+                    <td><button id="image3" class="link-button">확인하기</button></td>
+                </tr>
+                <tr>
+                    <td>4년 뒤</td>
+                    <td id="year4">₩0</td>
+                    <td id="rate4">20,703%</td>
+                    <td><button id="image4" class="link-button">확인하기</button></td>
+                </tr>
+                <tr>
+                    <td>5년 뒤</td>
+                    <td id="year5">₩0</td>
+                    <td id="rate5">54,141%</td>
+                    <td><button id="image5" class="link-button">확인하기</button></td>
+                </tr>
+                <tr>
+                    <td>6년 뒤</td>
+                    <td id="year6">₩0</td>
+                    <td id="rate6">80,581%</td>
+                    <td><button id="image6" class="link-button">확인하기</button></td>
+                </tr>
+            </tbody>
+        </table>
+        <details>
+            <summary style="cursor: pointer; padding: 10px; background-color: #007BFF; color: white; text-align: center; border-radius: 5px; margin-top: 20px; font-family: Arial, sans-serif;">어떻게 이런 수익률이 가능하나요?</summary>
+            <p style="padding: 10px; background-color: #f4f4f9; border: 1px solid #ddd; border-radius: 5px; font-family: Arial, sans-serif;">
+                'Snowball effect' (눈덩이 효과)<br><br>
+              	<img src="https://live.staticflickr.com/65535/53829898504_fd8eea4444_b.jpg" alt="설명 이미지" style="max-width: 100%; height: auto;">
+				<br><br>
+                세계적인 투자자 워렌 버핏이 복리 효과를 설명할 때
+                사용하는 단어입니다.<br>
+
+                초기에는 아주 적은 원금(눈덩이)일지라도, 수익에 수익이 붙어서<br>
+                굴러다니게 되면, 나중에는 큰 자산(산더미)가 된다는 현상이지요.<br><br>
+
+                '아무리 복리 수익률이라고 한들, 과연 눈덩이처럼 불어나는게 가능한걸까?'<br>
+                '어떻게 5년간 100배의 자산이 불어날 수 있지?'<br>
+                '복리라면 중간에 시작해봤자 수익은 적은거 아니야?' <br><br>
+
+                의심부터 덜컥 들며 자동매매 성능에 대한 의문점부터 생기겠지만 <br><br>
+                여러분들의 의심이 무색하게도,<br> LCTI 자동매매는 '언제 어느시점에' 시작하던지 <br>
+                높은 수익률을 가져다 준다는 자료를 먼저 보여드리도록 하겠습니다. <br><br>
+
+				<img src="https://live.staticflickr.com/65535/53829996300_5ec76501f7_b.jpg" alt="설명 이미지" style="max-width: 100%; height: auto;">
+                <img src="https://live.staticflickr.com/65535/53829559701_2b52a152e3_b.jpg" alt="설명 이미지" style="max-width: 100%; height: auto;">
+				<img src="https://live.staticflickr.com/65535/53828388622_8829d3eaeb_b.jpg" alt="설명 이미지" style="max-width: 100%; height: auto;">
+              	<img src="https://live.staticflickr.com/65535/53829543908_99c5dc5e40_b.jpg" alt="설명 이미지" style="max-width: 100%; height: auto;">
+              	<img src="https://live.staticflickr.com/65535/53829635704_b156a083ec_b.jpg" alt="설명 이미지" style="max-width: 100%; height: auto;">
+              	<img src="https://live.staticflickr.com/65535/53829738955_468c794c7d_b.jpg" alt="설명 이미지" style="max-width: 100%; height: auto;">
+              	<img src="https://live.staticflickr.com/65535/53829543953_f4b4136d3a_b.jpg" alt="설명 이미지" style="max-width: 100%; height: auto;">
+              	<img src="https://live.staticflickr.com/65535/53829543943_f11185b810_b.jpg" alt="설명 이미지" style="max-width: 100%; height: auto;">
+              	<img src="https://live.staticflickr.com/65535/53829766265_9530d1245d_b.jpg" alt="설명 이미지" style="max-width: 100%; height: auto;">
+              	<img src="https://live.staticflickr.com/65535/53828645397_5eceac29f2_b.jpg" alt="설명 이미지" style="max-width: 100%; height: auto;">
+                <br><br>
+                여러분들이 '언제' '어느시점에' 이 자동매매를 사용하던지간에<br>
+
+                <br>'연단위'로 모두 수익이 발생했기 때문에, 사용 시기에 상관 없이<br>
+                높은 확률로 수익을 얻어갈 수 있는 자동매매라는걸 보여드리는 자료입니다.<br><br>
+                더불어 전세계에 있는 5천만 투자자, 기관, 전문가가 사용하는<br> 트레이딩뷰의 기능을 사용해 수익률을 산출했기 때문에<br>
+                여러분들을 속일수도 없고 조작된 자료가 아님을 말씀 드립니다.<br><br>
+              	타점이 많이 나와 도파민만 터지는 매매를 하시는 분들에겐 <br> 구매를 권장드리지 않습니다.
+              	매매횟수가 많다고 한들<br> 수익이 아니면 의미가 없으며 자동매매 구매의 이유는<br>
+              	모두 수익을 보기 위함입니다.
+              	<br><br>LCTI 자동매매는 연단위로 손실이 없고 언제 시작하던지 안전성이 동반되며<br>
+              	복리로 높은 수익률을 가져갈수 있는 자동매매라는점을 생각하시길 바랍니다.
+              	
+               
+            </p>
+        </details>
+    </div>
+
+    <!-- 모달 구조 -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <img id="modalImg" src="" alt="Image" style="width:100%">
+        </div>
+    </div>
+</body>
+</html>
